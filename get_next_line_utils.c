@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/11 17:48:35 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/05/11 22:18:47 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/05/13 00:06:34 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,28 +60,32 @@ void	modify_node(t_list *node, int start)
 
 char	*returned_line(t_list **node, int lenght)
 {
-	t_list	*c_node;
 	char	*line;
+	t_list	*c_node;
 	int		i;
+	int		j;
 
-	line = (char *)malloc(sizeof(char) * lenght);
-	while(node)
+	j = 0;
+	c_node = *node;
+	line = (char *)malloc((sizeof(char) * lenght) + 1);
+	while(c_node)
 	{
 		i = 0;
-		while((*node -> content)[i] && (*node -> content)[i] != '\n')
+		while((c_node -> content)[i] && (c_node -> content)[i] != '\n')
 		{
-			line[i] = (*node -> content)[i];
+			line[j] = (c_node -> content)[i];
 			i++;
+			j++;
 		}
-		if ((*node -> content)[i] == '\n')
+		if ((c_node -> content)[i] == '\n')
 			line[i] = '\n';
-		if (!(*node -> next))
+		if (!(c_node -> next))
 			break ;
-		c_node = *node -> next;
+		c_node = c_node -> next;
 		ft_lstdelone(*node, free);
-		node = c_node;
+		*node = c_node;
 	}
-	modify_node(node, i);
+	modify_node(c_node, i);
 	return (line);
 }
 
@@ -98,3 +102,45 @@ int	check_nl(char *str)
 	}
 	return (0);
 }
+
+size_t	ft_strlen(const char *s)
+{
+	size_t	length;
+
+	length = 0;
+	while (s[length])
+		length++;
+	return (length);
+}
+
+char	*ft_strdup(char	*src)
+{
+	char	*duplicated;
+	char	*start;
+
+	duplicated = (char *)malloc((ft_strlen(src) + 1) * sizeof(char));
+	if (!duplicated)
+		return (0);
+	start = duplicated;
+	while (*src)
+	{
+		*duplicated = *src;
+		duplicated++;
+		src++;
+	}
+	*duplicated = '\0';
+	return (start);
+}
+
+t_list	*ft_lstnew(void *content)
+{
+	t_list	*node;
+
+	node = (t_list *) malloc(sizeof(t_list));
+	if (!node)
+		return (0);
+	node -> content = content;
+	node -> next = NULL;
+	return (node);
+}
+
