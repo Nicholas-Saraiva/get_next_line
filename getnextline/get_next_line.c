@@ -6,13 +6,13 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 11:29:41 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/05/15 11:28:53 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/05/15 17:27:05 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	ft_realoc(char *str1, char *str2)
+char	*ft_realoc(char *str1, char *str2)
 {
 	int		i;
 	int		size;
@@ -35,15 +35,20 @@ int	ft_realoc(char *str1, char *str2)
 		str1[i] = new_str[i];
 		i++;
 	}
-	while (*str2)
+	while (*str2 && *str2 != '\n')
 	{
 		str1[i] = *str2;
 		i++;
 		str2++;
 	}
+	if (*str2)
+	{
+		str1[i] = '\n';
+		i++;
+	}
 	str1[i] = '\0';
 	free(new_str);
-	return (i);
+	return (str1);
 }
 
 void	*ft_memcpy(void *dest, const void *src, size_t n)
@@ -75,11 +80,13 @@ char	*ft_newline(char *str, char *buff)
 	while (buff[i]  && buff[i] != '\n')
 		i++;
 	if (!buff[i])
+	{
+		buff[0] = '\0';
 		return (str);
-	str[i + 1] = '\0';
+	}
 	while (buff[i + j])
 		j++;
-	ft_memcpy(buff, buff + i, j);
+	ft_memcpy(buff, buff + i + 1, j);
 	return (str);
 } 
 
@@ -92,22 +99,31 @@ char	*get_next_line(int fd)
 	num_bytes = 0;
 	if (fd < 0)
 		return (0);
-	str = malloc (sizeof(char));
+	str = ft_strdup(buff);
+	if (!str)
+		return (0);
 	while ((num_bytes = read(fd, buff, BUFFER_SIZE)) > 0)
 	{
 		buff[num_bytes] = '\0';
-		ft_realoc(str, buff);
+		str = ft_realoc(str, buff);
 		if (check_nl(buff))
 			break ;
+	}
+	if (num_bytes <= 0 && !*str)
+	{
+		free(str);
+		return (0);
 	}
 	return (ft_newline(str, buff));
 }
 
-int	main(int argc, char *argv[])
+/*int	main(int argc, char *argv[])
 {
 	int fd = open(argv[1], O_RDONLY);
 	char *buff;
 	if (argc)
 		while ((buff = get_next_line(fd)))
-			continue ;
-}
+		{ 
+			free(buff);
+		}
+}*/

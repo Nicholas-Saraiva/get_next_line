@@ -6,14 +6,14 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 19:28:31 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/05/14 19:17:57 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/05/15 14:45:13 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
 
 char	*get_next_line(int fd)
 {
-	static t_list	node;
+	static t_list	**node;
 	t_list	*new_node;
 	char	*buff;
 	int		a;
@@ -23,6 +23,12 @@ char	*get_next_line(int fd)
 	a = 0;
 	if (node && *node)
 		lenght += ft_strlen((*node) -> content);
+	if (!node)
+	{
+		node = malloc(sizeof(t_list));
+		if (!node)
+			return (0);
+	}
 	if (fd < 0)
 		return (0);
 	buff = malloc(sizeof(char) * BUFFER_SIZE + 1);
@@ -49,13 +55,14 @@ char	*get_next_line(int fd)
 	return (returned_line(node, lenght));
 }
 
-int	main(int argc, char *argv[])
+/*int	main(int argc, char *argv[])
 {
 	int fd = open(argv[1], O_RDONLY);
 	char *buff;
 	if (argc)
 	while ((buff = get_next_line(fd)))
 	{
+		printf("%s", buff);
 		free(buff);
 	}
-}
+}*/
