@@ -6,25 +6,50 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 11:29:41 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/05/15 17:27:05 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/05/15 23:43:31 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_realoc(char *str1, char *str2)
+char	*ft_strjoin(char *s1, char *s2)
+{
+	char	*new_s;
+	int		i;
+
+	i = 0;
+	new_s = (char *) malloc((ft_strlen(s1) + ft_strlen(s2) + 1) * sizeof(char));
+	if (!new_s)
+		return (0);
+	while (s1[i])
+	{
+		new_s[i] = s1[i];
+		i++;
+	}
+	while (*s2)
+	{
+		new_s[i] = *s2;
+		s2++;
+		i++;
+		if (new_s[i - 1] == '\n')
+			break ;
+	}
+	new_s[i] = '\0';
+	free(s1);
+	return (new_s);
+}
+
+/*char	*ft_realoc(char *str1, char *str2)
 {
 	int		i;
-	int		size;
 	char	*new_str;
 
 	i = 0;
-	size = ft_strlen(str1) + ft_strlen(str2);
 	new_str = ft_strdup(str1);
 	if (!new_str)
 		return (0);
 	free(str1);
-	str1 = malloc(sizeof(char) * (size + 1));
+	str1 = malloc(sizeof(char) * (ft_strlen(new_str) + ft_strlen(str2) + 1));
 	if (!str1)
 	{
 		free(new_str);
@@ -49,7 +74,7 @@ char	*ft_realoc(char *str1, char *str2)
 	str1[i] = '\0';
 	free(new_str);
 	return (str1);
-}
+}*/
 
 void	*ft_memcpy(void *dest, const void *src, size_t n)
 {
@@ -78,7 +103,10 @@ char	*ft_newline(char *str, char *buff)
 	i = 0;
 	j = 0;
 	while (buff[i]  && buff[i] != '\n')
+	{
+		buff[i] = '\0';
 		i++;
+	}
 	if (!buff[i])
 	{
 		buff[0] = '\0';
@@ -99,19 +127,20 @@ char	*get_next_line(int fd)
 	num_bytes = 0;
 	if (fd < 0)
 		return (0);
-	str = ft_strdup(buff);
+	str = malloc(1);
 	if (!str)
 		return (0);
-	while ((num_bytes = read(fd, buff, BUFFER_SIZE)) > 0)
+	*str = '\0';
+	str = ft_strjoin(str, buff);
+	while (!check_nl(buff) && (num_bytes = read(fd, buff, BUFFER_SIZE)) > 0)
 	{
 		buff[num_bytes] = '\0';
-		str = ft_realoc(str, buff);
-		if (check_nl(buff))
-			break ;
+		str = ft_strjoin(str, buff);
 	}
-	if (num_bytes <= 0 && !*str)
+	if (num_bytes == -1  || (num_bytes == 0 && !*str))
 	{
 		free(str);
+		buff[0] = '\0';
 		return (0);
 	}
 	return (ft_newline(str, buff));
@@ -120,10 +149,10 @@ char	*get_next_line(int fd)
 /*int	main(int argc, char *argv[])
 {
 	int fd = open(argv[1], O_RDONLY);
-	char *buff;
 	if (argc)
-		while ((buff = get_next_line(fd)))
-		{ 
-			free(buff);
-		}
+	{
+		get_next_line(fd);
+		get_next_line(fd);
+		get_next_line(fd);
+	}
 }*/
