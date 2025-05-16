@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 11:29:41 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/05/16 12:27:47 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/05/16 18:45:13 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int	check_end(int num_bytes, char *buff, char *str)
 	if (num_bytes == -1 || (num_bytes == 0 && !*str))
 	{
 		free(str);
-		buff[0] = '\0';
+		*buff = 0;
 		return (1);
 	}
 	return (0);
@@ -76,21 +76,24 @@ char	*get_next_line(int fd)
 		return (0);
 	str = malloc(1);
 	if (!str)
-		return (0);
+		return (NULL);
 	*str = '\0';
-	str = ft_strjoin(str, buff);
+	if (*buff)
+		str = ft_strjoin(str, buff);
 	while (!check_nl(buff) && num_bytes > 0)
 	{
 		num_bytes = read(fd, buff, BUFFER_SIZE);
 		buff[num_bytes] = '\0';
 		str = ft_strjoin(str, buff);
+		if (!str)
+			return (0);
 	}
 	if (check_end(num_bytes, buff, str))
 		return (0);
 	return (ft_newline(str, buff));
 }
 
-int	main(int argc, char *argv[])
+/*int	main(int argc, char *argv[])
 {
 	int fd = open(argv[1], O_RDONLY);
 	if (argc)
@@ -98,7 +101,5 @@ int	main(int argc, char *argv[])
 		get_next_line(fd);
 		get_next_line(fd);
 		get_next_line(fd);
-		get_next_line(fd);
-		get_next_line(fd);
 	}
-}
+}*/
