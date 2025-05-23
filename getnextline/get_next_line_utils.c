@@ -6,11 +6,23 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/11 17:48:35 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/05/16 15:08:49 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:07:11 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+
+int	find_nl(char *str)
+{
+	int	i;
+
+	i = 0;
+	while(str[i] && str[i] != '\n')
+		i++;
+	if (str[i] == '\n')
+		i++;
+	return (i);
+}
 
 int	check_nl(char *str)
 {
@@ -33,13 +45,27 @@ size_t	ft_strlen(const char *s)
 	return (length);
 }
 
+int	ft_strnewline(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\n')
+			return (i + 1);
+		i++;
+	}
+	return (i);
+}
+
 char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*new_s;
 	int		i;
 
 	i = 0;
-	new_s = (char *) malloc((ft_strlen(s1) + ft_strlen(s2) + 1) * sizeof(char));
+	new_s = (char *) malloc((ft_strlen(s1) + find_nl(s2) + 1) * sizeof(char));
 	if (!new_s)
 		return (free(s1), NULL);
 	while (s1[i])
