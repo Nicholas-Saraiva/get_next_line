@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 11:29:41 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/05/23 12:08:38 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/05/23 17:36:21 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,24 +54,33 @@ char	*ft_newline(char *str, char *buff)
 	return (str);
 }
 
-int	check_end(int num_bytes, char *buff, char *str)
+char	*create_line(int fd, char *buff, char *str)
 {
+	int	num_bytes;
+
+	num_bytes = 1;
+	while (!check_nl(buff) && num_bytes > 0)
+	{
+		num_bytes = read(fd, buff, BUFFER_SIZE);
+		buff[num_bytes] = '\0';
+		str = ft_strjoin(str, buff);
+		if (!str)
+			return (0);
+	}
 	if (num_bytes == -1 || (num_bytes == 0 && !*str))
 	{
 		free(str);
 		*buff = 0;
-		return (1);
+		return (0);
 	}
-	return (0);
+	return (ft_newline(str, buff));
 }
 
 char	*get_next_line(int fd)
 {
 	static char	buff[BUFFER_SIZE + 1];
 	char		*str;
-	int			num_bytes;
 
-	num_bytes = 1;
 	if (fd < 0)
 		return (0);
 	str = malloc(1);
@@ -82,24 +91,16 @@ char	*get_next_line(int fd)
 		str = ft_strjoin(str, buff);
 	if (!str)
 		return (0);
-	while (!check_nl(buff) && num_bytes > 0)
-	{
-		num_bytes = read(fd, buff, BUFFER_SIZE);
-		buff[num_bytes] = '\0';
-		str = ft_strjoin(str, buff);
-		if (!str)
-			return (0);
-	}
-	if (check_end(num_bytes, buff, str))
-		return (0);
-	return (ft_newline(str, buff));
+	return (create_line(fd, buff, str));
 }
 
-#include <stdio.h>
-/*int	main(int argc, char *argv[])
+/*#include <stdio.h>
+int	main(int argc, char *argv[])
 {
 	int fd = open(argv[1], O_RDONLY);
-	char *buff;
+	char	*buff;
+
+	buff = 0;
 	if (argc)
 	{
 		while (buff)
