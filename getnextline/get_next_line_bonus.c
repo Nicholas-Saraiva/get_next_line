@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 11:29:41 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/05/23 18:18:04 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/05/25 16:21:17 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 void	*ft_memcpy(void *dest, const void *src, size_t n)
 {
@@ -78,20 +78,20 @@ char	*ft_create_line(int fd, char *buff, char *str)
 
 char	*get_next_line(int fd)
 {
-	static char	buff[BUFFER_SIZE + 1];
+	static char	buff[1024][BUFFER_SIZE + 1];
 	char		*str;
 
-	if (fd < 0)
+	if (fd < 0 || fd > 1024)
 		return (0);
 	str = malloc(1);
 	if (!str)
 		return (NULL);
 	*str = '\0';
-	if (*buff)
-		str = ft_strjoin(str, buff);
+	if (*buff[fd])
+		str = ft_strjoin(str, buff[fd]);
 	if (!str)
 		return (0);
-	return (ft_create_line(fd, buff, str));
+	return (ft_create_line(fd, buff[fd], str));
 }
 
 /*#include <stdio.h>
